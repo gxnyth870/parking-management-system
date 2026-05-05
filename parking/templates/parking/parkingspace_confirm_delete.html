@@ -1,0 +1,29 @@
+{% extends 'parking/base.html' %}
+
+{% block title %}Delete Parking Space{% endblock %}
+
+{% block content %}
+    <h1><i class="fas fa-trash-alt" style="color: #F44336;"></i> Delete Parking Space</h1>
+    
+    <div style="max-width: 500px; margin: 30px auto; background: linear-gradient(135deg, rgba(244, 67, 54, 0.1), rgba(230, 137, 0, 0.1)); padding: 30px; border-radius: 15px; border-left: 4px solid #F44336; text-align: center;">
+        <div style="font-size: 3em; margin-bottom: 20px;">
+            <i class="fas fa-exclamation-triangle" style="color: #F44336;"></i>
+        </div>
+        <h2 style="color: #F44336; margin: 0 0 15px 0;">Are you sure?</h2>
+        <p style="font-size: 1.1em; color: #333; margin: 0 0 20px 0;">
+            This will permanently delete <strong>"{{ object }}"</strong> from the system. This action cannot be undone.
+        </p>
+        
+        <div class="actions" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 30px;">
+            <form method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="button danger" style="margin: 0;">
+                    <i class="fas fa-check"></i> Yes, Delete Permanently
+                </button>
+            </form>
+            <a href="{% url 'parking:parkingspace_list' %}" class="button" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin: 0;">
+                <i class="fas fa-arrow-left"></i> Cancel
+            </a>
+        </div>
+    </div>
+{% endblock %}

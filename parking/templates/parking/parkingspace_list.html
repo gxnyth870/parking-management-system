@@ -1,0 +1,154 @@
+{% extends 'parking/base.html' %}
+
+{% block title %}Parking Spaces{% endblock %}
+
+{% block content %}
+    <h1><i class="fas fa-parking"></i> Parking Management System</h1>
+    
+    <!-- System Introduction Section -->
+    <div style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(240, 147, 251, 0.15)); border-radius: 15px; padding: 25px; margin: 20px 0 30px 0; border-left: 5px solid #667eea;">
+        <h2 style="margin-top: 0; color: #333;"><i class="fas fa-info-circle" style="color: #667eea;"></i> About This System</h2>
+        <p style="margin: 0; color: #555; line-height: 1.6;">
+            Welcome to the <strong>Smart Parking Management System</strong>. This platform provides a comprehensive solution for tracking and managing parking spaces in real-time. 
+            Monitor vehicle occupancy, track entry and exit times, and manage owner information effortlessly. Our intuitive interface allows you to:
+        </p>
+        <ul style="margin: 15px 0; color: #555; line-height: 1.8;">
+            <li><i class="fas fa-check" style="color: #4CAF50; margin-right: 8px;"></i><strong>Track Vehicles:</strong> View owner names, vehicle types, and license plates</li>
+            <li><i class="fas fa-check" style="color: #4CAF50; margin-right: 8px;"></i><strong>Monitor Status:</strong> Real-time occupancy tracking with visual indicators</li>
+            <li><i class="fas fa-check" style="color: #4CAF50; margin-right: 8px;"></i><strong>Manage Spaces:</strong> Add, edit, or remove parking spaces easily</li>
+            <li><i class="fas fa-check" style="color: #4CAF50; margin-right: 8px;"></i><strong>Duration Tracking:</strong> Automatic calculation of parking duration</li>
+            <li><i class="fas fa-check" style="color: #4CAF50; margin-right: 8px;"></i><strong>Quick Search:</strong> Find spaces and vehicles instantly</li>
+        </ul>
+    </div>
+    
+    <!-- Live Stats Row -->
+    <div class="quick-stats-row">
+        <div class="quick-stat">
+            <div>
+                <strong id="liveTotal">0</strong>
+                <span>Total Spaces</span>
+            </div>
+            <div class="indicator"></div>
+        </div>
+        <div class="quick-stat">
+            <div>
+                <strong id="liveOccupied">0</strong>
+                <span>Occupied</span>
+            </div>
+            <div class="indicator occupied"></div>
+        </div>
+        <div class="quick-stat">
+            <div>
+                <strong id="liveFree">0</strong>
+                <span>Available</span>
+            </div>
+            <div class="indicator free"></div>
+        </div>
+        <div class="quick-stat">
+            <div>
+                <strong id="liveRate">0%</strong>
+                <span>Occupancy Rate</span>
+            </div>
+            <div class="indicator" style="background: #f093fb;"></div>
+        </div>
+    </div>
+
+    <!-- Statistics Dashboard -->
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="stat-label"><i class="fas fa-car"></i> Total Spaces</div>
+            <div class="stat-number">{{ parking_spaces|length }}</div>
+        </div>
+        <div class="stat-card occupied">
+            <div class="stat-label"><i class="fas fa-ban"></i> Occupied</div>
+            <div class="stat-number" id="occupiedCount">0</div>
+        </div>
+        <div class="stat-card free">
+            <div class="stat-label"><i class="fas fa-check-circle"></i> Available</div>
+            <div class="stat-number" id="freeCount">0</div>
+        </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+            <div class="stat-label"><i class="fas fa-percent"></i> Occupancy Rate</div>
+            <div class="stat-number" id="occupancyRate">0%</div>
+        </div>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="search-bar">
+        <input 
+            type="text" 
+            id="searchInput" 
+            class="search-input" 
+            placeholder="🔍 Search by space, owner name, plate, or vehicle type..."
+            onkeyup="filterParkingSpaces()"
+        >
+        <a href="{% url 'parking:parkingspace_create' %}" class="button secondary">
+            <i class="fas fa-plus"></i> Add New Space
+        </a>
+    </div>
+
+    <!-- Parking Spaces Grid -->
+    <div class="parking-grid">
+        {% for space in parking_spaces %}
+        <div class="parking-space {% if space.occupancy_status %}occupied{% else %}free{% endif %}" 
+             onclick="window.location.href='{% url 'parking:parkingspace_detail' space.pk %}'"
+             data-space="{{ space.space_number }}"
+             data-owner="{{ space.owner_name|default:'' }}"
+             data-plate="{{ space.plate_number|default:'' }}"
+             data-type="{{ space.vehicle_type|default:'' }}">
+            <div class="space-header">
+                <span class="status-dot {% if space.occupancy_status %}occupied{% else %}free{% endif %}"></span>
+                <i class="fas {% if space.occupancy_status %}fa-times-circle{% else %}fa-check-circle{% endif %}"></i>
+            </div>
+            <strong>Space {{ space.space_number }}</strong>
+            {% if space.owner_name %}
+            <div style="font-size: 0.85em; margin: 8px 0; opacity: 0.95; font-weight: 500;">
+                <i class="fas fa-user"></i> {{ space.owner_name }}
+            </div>
+            {% endif %}
+            <div class="badge">
+                {% if space.occupancy_status %}
+                    <i class="fas fa-exclamation"></i> Occupied
+                {% else %}
+                    <i class="fas fa-thumbs-up"></i> Free
+                {% endif %}
+            </div>
+            {% if space.occupancy_status and space.vehicle_type %}
+            <div style="font-size: 0.85em; margin-top: 8px; opacity: 0.9;">
+                {{ space.vehicle_type }}
+            </div>
+            {% endif %}
+        </div>
+        {% empty %}
+        <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+            <i class="fas fa-inbox" style="font-size: 3em; color: #ccc;"></i>
+            <p style="color: #999; margin-top: 20px;">No parking spaces available. Create one to get started!</p>
+            <a href="{% url 'parking:parkingspace_create' %}" class="button secondary">
+                <i class="fas fa-plus"></i> Create First Space
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        // Update statistics
+        function updateStatistics() {
+            const total = document.querySelectorAll('.parking-space').length;
+            const occupied = document.querySelectorAll('.parking-space.occupied').length;
+            const free = total - occupied;
+            const rate = total > 0 ? Math.round((occupied / total) * 100) : 0;
+
+            document.getElementById('occupiedCount').textContent = occupied;
+            document.getElementById('freeCount').textContent = free;
+            document.getElementById('occupancyRate').textContent = rate + '%';
+            document.getElementById('liveTotal').textContent = total;
+            document.getElementById('liveOccupied').textContent = occupied;
+            document.getElementById('liveFree').textContent = free;
+            document.getElementById('liveRate').textContent = rate + '%';
+        }
+
+        // Initialize statistics on page load
+        window.addEventListener('load', updateStatistics);
+        updateStatistics();
+    </script>
+{% endblock %}

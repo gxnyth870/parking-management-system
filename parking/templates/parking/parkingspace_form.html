@@ -1,0 +1,43 @@
+{% extends 'parking/base.html' %}
+
+{% block title %}{% if form.instance.pk %}Update{% else %}Create{% endif %} Parking Space{% endblock %}
+
+{% block content %}
+    <h1>
+        <i class="fas {% if form.instance.pk %}fa-edit{% else %}fa-plus-circle{% endif %}"></i>
+        {% if form.instance.pk %}Update{% else %}Create New{% endif %} Parking Space
+    </h1>
+    
+    <div style="max-width: 600px; margin: 30px auto; background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(240, 147, 251, 0.05)); padding: 30px; border-radius: 15px; border: 2px solid rgba(102, 126, 234, 0.2);">
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+            <div style="margin-bottom: 20px;">
+                <label for="{{ field.id_for_label }}" style="display: block; font-weight: 600; color: #333; margin-bottom: 8px;">
+                    <i class="fas fa-check-circle" style="color: #667eea; margin-right: 5px;"></i>{{ field.label }}
+                </label>
+                <div style="position: relative;">
+                    {{ field }}
+                </div>
+                {% if field.errors %}
+                <div style="color: #F44336; font-size: 0.9em; margin-top: 5px; background: rgba(244, 67, 54, 0.1); padding: 8px; border-radius: 6px;">
+                    <i class="fas fa-exclamation-circle"></i> {{ field.errors }}
+                </div>
+                {% endif %}
+                {% if field.help_text %}
+                <small style="color: #999; display: block; margin-top: 5px;">{{ field.help_text|safe }}</small>
+                {% endif %}
+            </div>
+            {% endfor %}
+            
+            <div class="actions" style="display: flex; gap: 10px; justify-content: center; margin-top: 30px; flex-wrap: wrap;">
+                <button type="submit" class="button" style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);">
+                    <i class="fas fa-save"></i> Save
+                </button>
+                <a href="{% url 'parking:parkingspace_list' %}" class="button danger">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

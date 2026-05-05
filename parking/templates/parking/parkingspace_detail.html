@@ -1,0 +1,75 @@
+{% extends 'parking/base.html' %}
+
+{% block title %}Parking Space Detail{% endblock %}
+
+{% block content %}
+    <h1><i class="fas fa-info-circle"></i> {{ object }}</h1>
+    
+    <div style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(240, 147, 251, 0.1)); border-radius: 15px; padding: 25px; margin: 20px 0;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+            <div style="background: white; padding: 15px; border-radius: 10px; border-left: 4px solid #667eea;">
+                <div style="color: #999; font-size: 0.9em;">Space Number</div>
+                <div style="font-size: 1.5em; font-weight: bold; color: #333;">{{ object.space_number }}</div>
+            </div>
+            
+            <div style="background: white; padding: 15px; border-radius: 10px; border-left: 4px solid #4facfe;">
+                <div style="color: #999; font-size: 0.9em;">Status</div>
+                <div style="font-size: 1.5em; font-weight: bold; color: {% if object.occupancy_status %}#F44336{% else %}#4CAF50{% endif %};">
+                    <i class="fas {% if object.occupancy_status %}fa-ban{% else %}fa-check-circle{% endif %}"></i>
+                    {% if object.occupancy_status %}Occupied{% else %}Available{% endif %}
+                </div>
+            </div>
+
+            <div style="background: white; padding: 15px; border-radius: 10px; border-left: 4px solid #f093fb;">
+                <div style="color: #999; font-size: 0.9em;"><i class="fas fa-user"></i> Owner Name</div>
+                <div style="font-size: 1.3em; font-weight: bold; color: #333;">{{ object.owner_name|default:"Not Registered" }}</div>
+            </div>
+
+            <div style="background: white; padding: 15px; border-radius: 10px; border-left: 4px solid #FF9800;">
+                <div style="color: #999; font-size: 0.9em;">Vehicle Type</div>
+                <div style="font-size: 1.3em; font-weight: bold; color: #333;">{{ object.vehicle_type|default:"N/A" }}</div>
+            </div>
+
+            <div style="background: white; padding: 15px; border-radius: 10px; border-left: 4px solid #00f2fe;">
+                <div style="color: #999; font-size: 0.9em;">Plate Number</div>
+                <div style="font-size: 1.2em; font-weight: bold; color: #333; font-family: monospace;">{{ object.plate_number|default:"N/A" }}</div>
+            </div>
+        </div>
+    </div>
+
+    {% if object.occupancy_status %}
+    <div style="background: linear-gradient(135deg, rgba(244, 67, 54, 0.1), rgba(230, 137, 0, 0.1)); border-radius: 15px; padding: 20px; margin: 20px 0; border-left: 4px solid #F44336;">
+        <h3 style="margin-top: 0;"><i class="fas fa-clock"></i> Occupancy Timeline</h3>
+        <div style="display: grid; gap: 10px;">
+            <div>
+                <strong>Entry Time:</strong> {{ object.entry_time|default:"N/A" }}
+            </div>
+            <div>
+                <strong>Exit Time:</strong> {{ object.exit_time|default:"Still Parked" }}
+            </div>
+            {% if object.duration %}
+            <div style="background: white; padding: 10px; border-radius: 8px;">
+                <strong><i class="fas fa-hourglass-half"></i> Duration:</strong> {{ object.duration }}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% else %}
+    <div style="background: linear-gradient(135deg, rgba(79, 172, 254, 0.1), rgba(0, 242, 254, 0.1)); border-radius: 15px; padding: 20px; margin: 20px 0; border-left: 4px solid #4facfe; text-align: center;">
+        <h3 style="margin-top: 0;"><i class="fas fa-thumbs-up"></i> This Space is Available</h3>
+        <p style="margin: 0; color: #555;">No vehicle is currently parked in this space.</p>
+    </div>
+    {% endif %}
+
+    <div class="actions" style="display: flex; gap: 10px; justify-content: center; margin-top: 30px;">
+        <a href="{% url 'parking:parkingspace_list' %}" class="button" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <i class="fas fa-arrow-left"></i> Back to List
+        </a>
+        <a href="{% url 'parking:parkingspace_update' object.pk %}" class="button warning">
+            <i class="fas fa-edit"></i> Edit
+        </a>
+        <a href="{% url 'parking:parkingspace_delete' object.pk %}" class="button danger">
+            <i class="fas fa-trash"></i> Delete
+        </a>
+    </div>
+{% endblock %}

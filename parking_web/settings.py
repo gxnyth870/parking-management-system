@@ -27,7 +27,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-@lct#xg-gmvus4b8kbv(m
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['*'] if os.environ.get('DEBUG', 'False') == 'True' else os.environ.get('ALLOWED_HOSTS', 'parking-web.onrender.com').split(',')
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition

@@ -10,7 +10,7 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: ALLOWED_HOSTS
-        value: parking-web.onrender.com
+        value: '*'
       - key: DATABASE_URL
         fromDatabase:
           type: postgresql
